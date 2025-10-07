@@ -1,26 +1,68 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* light (default) + dark via .dark di <html> */
+:root{
+  --bg:#faf7f0;
+  --ink:#111827;
+  --muted:#4b5563;
+}
+.dark{
+  --bg:#0b0c1b;
+  --ink:#e6eaf2;
+  --muted:#a5b1c2;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+html,body{height:100%}
+body{background:var(--bg); color:var(--ink)}
+.text-ink{color:var(--ink)}
+.text-muted{color:var(--muted)}
+
+/* reveal + helpers */
+.reveal{opacity:0; transform:translateY(18px); transition:opacity .6s ease, transform .6s cubic-bezier(.2,.7,.2,1)}
+[data-inview="true"].reveal{opacity:1; transform:none}
+.no-scrollbar::-webkit-scrollbar{display:none}
+.no-scrollbar{-ms-overflow-style:none; scrollbar-width:none}
+
+/* ==== FIX: card adaptif ==== */
+@utility card{
+  @apply relative rounded-2xl p-5 md:p-6 backdrop-blur-md
+         border border-black/10 bg-white
+         dark:border-white/10 dark:bg-white/5;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* tombol */
+@utility btn-primary{
+  @apply inline-flex items-center justify-center rounded-full px-5 py-3 font-semibold text-white transition hover:-translate-y-[1px];
+}
+.btn-primary{
+  background:linear-gradient(90deg,#00F5FF,#A259FF);
+  box-shadow:0 10px 24px rgba(0,255,255,.18),0 10px 24px rgba(162,89,255,.18);
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@utility btn-ghost{
+  @apply inline-flex items-center justify-center rounded-full px-5 py-3 font-semibold transition;
 }
+.btn-ghost{ color:#111827; background:rgba(255,255,255,.92); border:1px solid rgba(0,0,0,.12) }
+.btn-ghost:hover{ background:#fff }
+.dark .btn-ghost{ color:rgba(255,255,255,.92); background:transparent; border:1px solid rgba(255,255,255,.15) }
+
+/* grid overlay (opsional) */
+.hero-grid{
+  position:absolute; inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.07) 1px, transparent 1px);
+  background-size:60px 60px; opacity:.10; mix-blend-mode:overlay; pointer-events:none;
+}
+
+/* input adaptif */
+@utility input{
+  @apply w-full rounded-2xl px-4 py-3 border focus:outline-none focus:ring-2 focus:ring-cyan-400/40;
+}
+@utility textarea{
+  @apply w-full rounded-2xl px-4 py-3 border focus:outline-none focus:ring-2 focus:ring-cyan-400/40;
+}
+.input,.textarea{ color:#111827; background:#fff; border-color:rgba(0,0,0,.12) }
+.input::placeholder,.textarea::placeholder{ color:#6b7280 }
+.dark .input,.dark .textarea{ color:#fff; background:rgba(255,255,255,.08); border-color:rgba(255,255,255,.18) }
+.dark .input::placeholder,.dark .textarea::placeholder{ color:rgba(255,255,255,.65) }
