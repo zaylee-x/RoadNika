@@ -129,7 +129,7 @@ export default function ProfilePage() {
         <div className="mx-auto max-w-5xl space-y-10">
           <section className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 md:p-8">
             <h1 className="text-2xl md:text-3xl font-bold">Atur Profil & Skill</h1>
-            <p className="text-white/70 mt-1">Isi data singkatmu—semua tersimpan di browser.</p>
+            <p className="text-white/70 mt-1">Isi data singkatmu.</p>
 
             <form onSubmit={onSubmit} className="mt-6 space-y-8">
               {/* BASIC */}
