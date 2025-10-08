@@ -1,11 +1,6 @@
 import { NextResponse } from 'next/server';
 
-/**
- * price: "free" | "paid"
- * format: "self-paced" | "cohort" | "bootcamp"
- * os: boolean (open-source material/code)
- * role: ["frontend"|"uiux"|"data"|"backend", ...]
- */
+
 const CATALOG = [
   // ---------- Frontend ----------
   { id:'fe-fcc', role:['frontend'], title:'freeCodeCamp – Responsive Web Design', provider:'freeCodeCamp', url:'https://www.freecodecamp.org/learn/2022/responsive-web-design/', price:'free', os:true,  format:'self-paced', level:'Beginner', duration:'~40–60h', tags:['html','css','frontend'] },
