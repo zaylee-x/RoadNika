@@ -1,36 +1,45 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# RoadNika — Ukur Skill & Petakan Karier 🎯
 
-## Getting Started
+> Platform kecil tapi niat: bantu perempuan masuk/naik level di dunia teknologi lewat **profil singkat → roadmap personal** (mingguan & mindmap) + **kelas terkurasi**.  
+> Dibangun dengan **Next.js (App Router)**, **Tailwind CSS**, dan **Zustand**.
 
-First, run the development server:
+<p align="center">
+  <img src="public/image/cover.png" alt="RoadNika cover" width="860" />
+</p>
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+<p align="center">
+  <a><img src="https://img.shields.io/badge/Next.js-15-black?logo=nextdotjs" /></a>
+  <a><img src="https://img.shields.io/badge/TailwindCSS-latest-teal?logo=tailwindcss" /></a>
+  <a><img src="https://img.shields.io/badge/Zustand-store-orange" /></a>
+  <a><img src="https://img.shields.io/badge/Deployed%20on-Vercel-black?logo=vercel" /></a>
+</p>
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## ✨ Fitur Utama
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Profil sekali isi** → nama, role, level, skill, sertifikat, proyek (**disimpan lokal**).
+- **Roadmap Mingguan** → checklist realistis (6–8 jam/minggu) + catatan/refleksi.
+- **Mindmap UI/UX** → zoom/pan, status node (Belum/Proses/Selesai), klik node → **Resource Drawer**.
+- **Kelas/Katalog** → filter by **role** (FE/BE/UIUX/Data), **free/paid**, format, dan topik.
+- **Google Calendar** → _deep link_ cepat (tanpa file `.ics`) buat block waktu belajar.
+- **Fallback pintar** → kalau AI error, roadmap tetap dibuat dari katalog & rules lokal.
+- **Dark-mode first** + animasi halus.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🧭 Halaman
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Path | Deskripsi |
+| --- | --- |
+| `/` | Landing + CTA |
+| `/profile` | Form profil **satu halaman** (basic + skill + sertifikat + proyek) |
+| `/roadmap` | Landing Roadmap (preview + CTA) + Reset Roadmap |
+| `/roadmap/my` | **Roadmapku** — toggle **Mindmap / Mingguan / Kelas** |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+> Ganti gambar di `/public/image/` (`cover.png`, `profile.png`, `roadmap.png`, …) biar README makin hidup.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🗂 Struktur Folder
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
