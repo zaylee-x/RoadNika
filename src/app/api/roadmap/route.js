@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import { getGemini } from '@/lib/gemini';
+import { buildRoadmapWithGemini } from '@/lib/gemini';
 
-// katalog sederhana utk fallback rekomendasi
+// baseline resources untuk rekomendasi cepat
 const CATALOG = [
   { title:'HTML Semantik Cepat', url:'https://web.dev/learn/html/', provider:'web.dev', level:'Beginner', tags:['html'], minutes:90 },
   { title:'CSS Flexbox & Grid', url:'https://css-tricks.com/snippets/css/a-guide-to-flexbox/', provider:'CSS-Tricks', level:'Beginner', tags:['css','flexbox','grid'], minutes:120 },
@@ -10,63 +10,53 @@ const CATALOG = [
   { title:'Figma untuk UI', url:'https://help.figma.com/', provider:'Figma', level:'Beginner', tags:['figma','ui design'], minutes:120 },
   { title:'Usability & Heuristics', url:'https://www.nngroup.com/articles/ten-usability-heuristics/', provider:'NN/g', level:'Beginner', tags:['ux','heuristic'], minutes:40 },
   { title:'React Dasar', url:'https://react.dev/learn', provider:'React', level:'Beginner', tags:['javascript','react'], minutes:180 },
+  { title:'SQL Dasar', url:'https://selectstarsql.com/', provider:'Select Star SQL', level:'Beginner', tags:['sql'], minutes:150 },
 ];
 
 const ROLE_SKILLS = {
-  'frontend': ['html','css','javascript','git','deploy','react'],
-  'ui ux': ['figma','wireframe','prototype','ui design','ux','heuristic','portfolio'],
-  'data analyst': ['sql','excel','viz','python','statistics','dashboard'],
-  'qa engineer': ['testing','automation','test case','selenium','cypress','api testing'],
+  frontend: ['html','css','javascript','react','git','deploy'],
+  backend : ['api','database','node','auth','git','deploy'],
+  uiux    : ['figma','wireframe','prototype','ui design','ux','heuristic'],
+  data    : ['sql','excel','python','statistics','viz','dashboard'],
 };
 
 export async function POST(req) {
   try {
     const body = await req.json();
+
     const name  = (body.name  || '').trim();
-    const role  = (body.role  || '').toLowerCase().trim();
+    const role  = (body.role  || '').trim();
     const level = (body.level || 'Beginner').trim();
     const skillsInput = Array.isArray(body.skills) ? body.skills : (body.skills || []);
-    const userSkills = skillsInput.map((s)=>String(s).toLowerCase().trim()).filter(Boolean);
+    const userSkills = skillsInput.map(s => String(s).toLowerCase().trim()).filter(Boolean);
 
-    // hitung gaps dari role requirement sederhana
-    const needed = ROLE_SKILLS[role] || [];
-    const gaps = needed.filter(reqSkill => !userSkills.includes(reqSkill));
+    const roleKey = normalizeRole(role);
+    const needed  = ROLE_SKILLS[roleKey] || [];
+    const gaps    = needed.filter(x => !userSkills.includes(x));
 
-    // siapkan prompt ke Gemini (minta juga weeks)
-    const prompt = `
-Buat roadmap 4-6 minggu untuk ${name || 'user'}.
-Role: ${role || 'frontend'}. Level: ${level}. Skill user: ${userSkills.join(', ') || '-'}.
-Output JSON valid TANPA markdown, bentuk:
-{
-  "weeks":[
-    {"week":1,"theme":"...","tasks":["...","..."],"hours":6}
-  ]
-}
-Fokuskan task untuk menutup skill gap: ${gaps.join(', ') || '-'}.
-`;
-
-    let weeks;
+    // 1) coba AI
+    let weeks = [];
     try {
-      const model = getGemini('gemini-1.5-flash');
-      const res = await model.generateContent(prompt);
-      const text = res.response.text();
-      weeks = parseJson(text)?.weeks;
-      if (!Array.isArray(weeks) || !weeks.length) throw new Error('invalid weeks');
+      const ai = await buildRoadmapWithGemini({ name, role, level, skills: userSkills });
+      weeks = (ai.weeks || []).map(w => ({
+        week : Number(w.week) || weeks.length + 1,
+        theme: String(w.theme || '').trim() || 'Minggu',
+        tasks: Array.isArray(w.tasks) ? w.tasks.slice(0, 8).map(String) : [],
+        hours: Number(w.hours) || 6,
+      }));
     } catch {
-      // fallback lokal: generate 4 minggu dari gaps/needed
+      // 2) fallback lokal terarah dari gaps/needed
       const topics = (gaps.length ? gaps : needed).slice(0, 4);
       weeks = topics.map((t, i) => ({
-        week: i + 1,
-        theme: capitalize(t),
-        tasks: buildTasksFor(t, role),
+        week : i + 1,
+        theme: caps(t),
+        tasks: buildTasksFor(t, roleKey),
         hours: 6,
       }));
     }
 
-    // rekomendasi dari katalog
-    const resources = CATALOG
-      .filter(r => r.tags.some(t => gaps.includes(t)))
-      .slice(0, 6);
+    // rekomendasi resource dari catalog seputar gaps
+    const resources = CATALOG.filter(r => r.tags.some(t => gaps.includes(t))).slice(0, 8);
 
     const data = {
       profile: { name, role, level, skills: userSkills },
@@ -80,26 +70,39 @@ Fokuskan task untuk menutup skill gap: ${gaps.join(', ') || '-'}.
   }
 }
 
-// helpers
-function parseJson(s) {
-  const m = String(s).match(/```(?:json)?\s*([\s\S]*?)```/i);
-  const raw = m ? m[1] : s;
-  return JSON.parse(raw);
+function normalizeRole(role) {
+  const r = role.toLowerCase();
+  if (r.includes('front')) return 'frontend';
+  if (r.includes('back'))  return 'backend';
+  if (r.includes('ui') || r.includes('ux')) return 'uiux';
+  if (r.includes('data'))  return 'data';
+  return 'frontend';
 }
-function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
-function buildTasksFor(topic, role){
+function caps(s){ return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
+
+function buildTasksFor(topic, roleKey){
   const t = String(topic).toLowerCase();
-  if (role.includes('ui')) {
-    if (t.includes('figma')) return ['Figma dasar', 'Auto-layout', 'Komponen', 'Wireframe 1 layar'];
-    if (t.includes('ux') || t.includes('heuristic')) return ['Baca 10 heuristik', 'Audit 1 app', 'Perbaiki 1 layar'];
-    if (t.includes('ui')) return ['Typography/Color', '3 card komponen', 'Style guide ringkas'];
-  } else {
-    if (t.includes('html')) return ['HTML semantik', 'Forms & a11y', '1 halaman portofolio'];
-    if (t.includes('css')) return ['Flexbox', 'Grid', 'Responsive layout'];
-    if (t.includes('javascript')) return ['DOM dasar', 'Event', 'Fetch API mini'];
-    if (t.includes('react')) return ['Komponen & props', 'State', 'Fetch data', '2 komponen kecil'];
-    if (t.includes('git')) return ['init → commit', 'branch kecil', 'pull request'];
-    if (t.includes('deploy')) return ['Setup Vercel', 'Env var', '1 deploy publik'];
+  if (roleKey === 'uiux') {
+    if (t.includes('figma'))     return ['Figma dasar', 'Auto-layout & Variants', 'Komponen', 'Wireframe 1 layar'];
+    if (t.includes('heuristic') || t.includes('ux')) return ['Baca 10 heuristik', 'Audit 1 app', 'Perbaiki 1 layar'];
+    if (t.includes('ui'))        return ['Color/Typography', '3 kartu komponen', 'Mini style-guide'];
+  } else if (roleKey === 'backend') {
+    if (t.includes('api'))       return ['REST dasar', 'CRUD kecil', 'Dokumentasi OpenAPI'];
+    if (t.includes('database'))  return ['Relasi & index', 'Query dasar', 'Backup & seed'];
+    if (t.includes('node'))      return ['Express routing', 'Middleware', 'Error handling'];
+    if (t.includes('auth'))      return ['JWT/Session', 'Protect route', 'Refresh token'];
+  } else if (roleKey === 'data') {
+    if (t.includes('sql'))       return ['SELECT/WHERE', 'JOIN/AGGREGATE', '3 query analitik'];
+    if (t.includes('excel'))     return ['VLOOKUP/XLOOKUP', 'Pivot table', 'Cleaning tips'];
+    if (t.includes('python'))    return ['pandas Series/DataFrame', 'read_csv', 'GroupBy mini'];
+    if (t.includes('viz'))       return ['Chart dasar', 'Storytelling', '1 dashboard mini'];
+  } else { // frontend
+    if (t.includes('html'))      return ['HTML semantik', 'Forms & a11y', '1 halaman portofolio'];
+    if (t.includes('css'))       return ['Flexbox', 'Grid', 'Responsive layout'];
+    if (t.includes('javascript'))return ['DOM & event', 'Fetch API mini', 'Modularisasi'];
+    if (t.includes('react'))     return ['Komponen & props', 'State', 'Fetch data (2 komponen)'];
+    if (t.includes('git'))       return ['init → commit', 'branch kecil', 'pull request'];
+    if (t.includes('deploy'))    return ['Setup Vercel', 'Env var', '1 deploy publik'];
   }
-  return ['Pelajari konsep dasar', 'Latihan kecil terarah', 'Catat insight'];
+  return ['Belajar konsep inti', 'Latihan kecil terarah', 'Catat insight'];
 }
