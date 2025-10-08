@@ -1,18 +1,18 @@
-import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+'use client';
+
+import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
 
 export const useAppStore = create(
   persist(
-    (set, get) => ({
+    (set) => ({
       profile: null,
       roadmap: null,
-
       setProfile: (p) => set({ profile: p }),
       setRoadmap: (r) => set({ roadmap: r }),
-
-      clearRoadmap: () => set({ roadmap: null }),
-      resetAll:     () => set({ profile: null, roadmap: null }),
+      resetRoadmap: () => set({ roadmap: null }),
+      resetAll: () => set({ profile: null, roadmap: null })
     }),
-    { name: 'selaras-app' }
+    { name: 'selaras-store', storage: createJSONStorage(() => localStorage) }
   )
-)
+);
