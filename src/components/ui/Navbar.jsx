@@ -9,7 +9,6 @@ const LINKS = [
   { href: '/learn',   label: 'Belajar' },
 ];
 
-// apply CSS variables (tema Arunika)
 function applyTheme(theme) {
   const r = document.documentElement;
   if (theme === 'light') {
@@ -46,7 +45,6 @@ export default function Navbar(){
     localStorage.setItem('theme', next);
   }, [isDark]);
 
-  // kelas dinamis untuk 2 tema
   const shell =
     'w-full rounded-full px-3 py-2 border backdrop-blur-md ' +
     (isDark
@@ -78,9 +76,7 @@ export default function Navbar(){
     <header className="fixed inset-x-0 top-0 z-50">
       <div className="mx-auto max-w-6xl px-4 pt-4">
         <div className={shell}>
-          {/* grid 3 kolom: kiri brand, tengah nav, kanan CTA */}
           <div className="grid grid-cols-[1fr_auto_1fr] items-center">
-            {/* LEFT: brand + toggle */}
             <div className="flex items-center gap-2">
               <Link href="/" className="pl-2 font-extrabold tracking-tight transition hover:opacity-90" aria-label="RoadNika">
                 <span className={`grad-text text-lg md:text-xl ${brandText}`}>RoadNika</span>
@@ -93,12 +89,10 @@ export default function Navbar(){
                 title="Dark / Light"
               >
                 {isDark ? (
-                  // Sun icon (show when dark, meaning click -> light)
                   <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden>
                     <path d="M12 18a6 6 0 1 1 0-12 6 6 0 0 1 0 12Zm0-14a1 1 0 1 0 0-2 1 1 0 0 0 0 2Zm0 18a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM3 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2Zm18 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM5.6 6.6a1 1 0 1 0-1.2-1.6 1 1 0 0 0 1.2 1.6Zm14 12a1 1 0 1 0-1.2-1.6 1 1 0 0 0 1.2 1.6ZM4.4 19.4a1 1 0 1 0 1.2-1.6 1 1 0 0 0-1.2 1.6Zm14-12a1 1 0 1 0 1.2-1.6 1 1 0 0 0-1.2 1.6Z"/>
                   </svg>
                 ) : (
-                  // Moon icon (show when light, meaning click -> dark)
                   <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden>
                     <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/>
                   </svg>
@@ -106,7 +100,6 @@ export default function Navbar(){
               </button>
             </div>
 
-            {/* CENTER: nav */}
             <nav className="justify-self-center flex items-center gap-1">
               {LINKS.map((l) => {
                 const active = pathname === l.href;
@@ -117,7 +110,6 @@ export default function Navbar(){
                     className={`${linkBase} ${active ? linkActive : linkIdle}`}
                   >
                     <span>{l.label}</span>
-                    {/* hover glow underline */}
                     <span
                       className="pointer-events-none absolute inset-x-3 -bottom-1 h-px opacity-0 group-hover:opacity-100 transition"
                       style={{
@@ -131,10 +123,9 @@ export default function Navbar(){
               })}
             </nav>
 
-            {/* RIGHT: CTA (ganti login) */}
             <div className="justify-self-end pr-2">
               <Link
-                href="/roadmap/new"
+                href="/profile"
                 className={ctaBtn}
                 style={{ background: 'linear-gradient(90deg,#00ffff,#a259ff)' }}
               >
