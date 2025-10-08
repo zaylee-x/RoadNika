@@ -1,85 +1,144 @@
-'use client'
-import Link from 'next/link'
-import { useAppStore } from '@/store/useAppStore'
-import ResetRoadmapButton from '@/components/ResetRoadmapButton'
+'use client';
 
-function EmptyState() {
+import Link from 'next/link';
+import Navbar from '@/components/ui/Navbar';
+import Footer from '@/components/ui/Footer';
+import Reveal from '@/components/Reveal';
+import ResetRoadmapButton from '@/components/ResetRoadmapButton';
+import { useMemo } from 'react';
+import { useAppStore } from '@/store/useAppStore';
+
+function Badge({ children }) {
   return (
-    <main className="px-4 pt-[110px] pb-24">
-      <div className="mx-auto max-w-4xl">
-        <div className="rounded-[28px] border border-white/10 bg-white/5 backdrop-blur-xl p-10 text-center">
-          <h1 className="text-2xl font-bold">Belum ada roadmap.</h1>
-          <p className="text-muted mt-2">
-            Mulai dari halaman <Link href="/profile" className="underline">Profil</Link> untuk membuat roadmap pertamamu.
-          </p>
-          <div className="mt-6">
-            <Link href="/profile" className="btn-primary">Buat dari Profil</Link>
-          </div>
-        </div>
-      </div>
-    </main>
-  )
+    <span className="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-white/15 bg-white/5 text-white/90">
+      {children}
+    </span>
+  );
 }
 
-function HasRoadmap({ roadmap }) {
-  // contoh render sederhana; sesuaikan dengan komponenmu
+function TimelineItem({ index, title, desc }) {
   return (
-    <main className="px-4 pt-[110px] pb-24">
-      <div className="mx-auto max-w-6xl">
-        <div className="mb-4 flex items-center justify-between">
-          <h1 className="text-xl font-semibold">Roadmap Kamu</h1>
-          <ResetRoadmapButton />
-        </div>
+    <div className="relative pl-10">
+      <span className="absolute left-0 top-0 grid size-7 place-items-center rounded-full bg-gradient-to-tr from-cyan-400 to-fuchsia-500 text-[11px] font-bold shadow-[0_8px_20px_rgba(0,0,0,.25)]">
+        {index}
+      </span>
+      <div className="font-semibold">{title}</div>
+      <div className="mt-0.5 text-sm text-white/70">{desc}</div>
+      <span className="absolute left-[13px] top-7 h-[54px] w-[2px] bg-white/15" />
+    </div>
+  );
+}
 
-        <div className="grid md:grid-cols-2 gap-6">
-          <div className="card">
-            <h3 className="font-semibold">Tahapan</h3>
-            <ul className="mt-3 space-y-2 text-sm text-white/90">
-              {(roadmap?.stages || []).map((s, i) => (
-                <li key={i} className="flex items-start gap-2">
-                  <span className="mt-1 h-2 w-2 rounded-full bg-cyan-300" />
-                  <div>
-                    <div className="font-medium">{s.title || `Tahap ${i+1}`}</div>
-                    {s.desc && <div className="text-muted text-xs">{s.desc}</div>}
+function CheckItem({ children }) {
+  return (
+    <li className="flex items-start gap-2 text-sm">
+      <span className="mt-[2px] grid size-4 place-items-center rounded-[6px] bg-white/10 ring-1 ring-white/15 text-[10px]">✓</span>
+      <span className="text-white/85">{children}</span>
+    </li>
+  );
+}
+
+export default function RoadmapLanding() {
+  const roadmap = useAppStore((s) => s.roadmap);
+  const hasRoadmap = useMemo(() => Boolean(roadmap), [roadmap]);
+
+  return (
+    <>
+      <Navbar />
+      <main className="px-4 pt-[108px] pb-20">
+        <div className="mx-auto max-w-6xl space-y-12">
+          <section className="relative overflow-hidden">
+            <div className="absolute -inset-1 rounded-[34px] bg-gradient-to-r from-cyan-400/20 via-fuchsia-500/15 to-transparent blur-2xl" />
+            <div className="relative rounded-[28px] border border-white/10 bg-white/5 backdrop-blur-xl p-8 md:p-12 shadow-[0_24px_60px_rgba(0,0,0,.35)]">
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div>
+                  <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">Roadmap</h1>
+                  <p className="mt-2 max-w-2xl text-white/75">Ringkasan tahapan dan contoh rencana minggu pertama. Mulai dari Profil untuk membuat roadmap sesuai role dan level.</p>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <Badge>Personalized</Badge>
+                    <Badge>Checklist Mingguan</Badge>
                   </div>
-                </li>
-              ))}
-            </ul>
-          </div>
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  {!hasRoadmap && <Link href="/profile" className="btn-primary">Mulai dari Profil</Link>}
+                  {hasRoadmap && (
+                    <>
+                      <Link href="/roadmap/my" className="btn-primary">Lihat Roadmapku</Link>
+                      <ResetRoadmapButton />
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          </section>
 
-          <div className="card">
-            <h3 className="font-semibold">Rencana Minggu 1</h3>
-            <ul className="mt-3 space-y-2 text-sm">
-              {(roadmap?.weeks?.[0]?.tasks || []).map((t, i) => (
-                <li key={i} className="flex items-start gap-2">
-                  <span>•</span>
-                  <span>{t}</span>
-                </li>
-              ))}
-            </ul>
+          <section className="grid gap-6 md:grid-cols-2">
+            <Reveal>
+              <div className="card">
+                <div className="mb-4 text-sm text-white/70">Tahapan</div>
+                <div className="space-y-6">
+                  <TimelineItem index={1} title="Fundamental" desc="HTML, CSS, dasar JavaScript." />
+                  <TimelineItem index={2} title="Git & Deploy" desc="Workflow Git, deploy sederhana." />
+                  <TimelineItem index={3} title="Projects" desc="1–2 proyek portofolio terarah." />
+                  <div className="relative pl-10">
+                    <span className="absolute left-0 top-0 grid size-7 place-items-center rounded-full bg-gradient-to-tr from-cyan-400 to-fuchsia-500 text-[11px] font-bold">4</span>
+                    <div className="font-semibold">Interview Prep</div>
+                    <div className="mt-0.5 text-sm text-white/70">CV, GitHub, mock interview.</div>
+                  </div>
+                </div>
+              </div>
+            </Reveal>
 
-            {roadmap?.weeks?.[0]?.resources?.length ? (
-              <>
-                <div className="mt-4 text-sm text-muted">Sumber belajar:</div>
-                <ul className="mt-1 space-y-1 text-sm">
-                  {roadmap.weeks[0].resources.map((r, i) => (
-                    <li key={i}>
-                      <a href={r.url} target="_blank" rel="noreferrer" className="underline">{r.title || r.url}</a>
-                    </li>
-                  ))}
+            <Reveal delay={80}>
+              <div className="card">
+                <div className="mb-4 text-sm text-white/70">Contoh Rencana Minggu 1</div>
+                <ul className="space-y-2">
+                  <CheckItem>HTML Semantik dan struktur halaman.</CheckItem>
+                  <CheckItem>Layouting modern (Flexbox, Grid).</CheckItem>
+                  <CheckItem>Komponen UI kecil.</CheckItem>
+                  <CheckItem>Git init, commit, push, repo publik.</CheckItem>
+                  <CheckItem>Deploy cepat satu halaman.</CheckItem>
                 </ul>
-              </>
-            ) : null}
-          </div>
-        </div>
-      </div>
-    </main>
-  )
-}
+                <div className="mt-5 grid grid-cols-3 gap-3">
+                  <div className="rounded-xl bg-white/5 px-3 py-3 ring-1 ring-white/15">
+                    <div className="text-[11px] text-white/60">TARGET JAM</div>
+                    <div className="text-center font-semibold">6–8</div>
+                  </div>
+                  <div className="rounded-xl bg-white/5 px-3 py-3 ring-1 ring-white/15">
+                    <div className="text-[11px] text-white/60">CHECKPOINT</div>
+                    <div className="text-center font-semibold">1 deploy</div>
+                  </div>
+                  <div className="rounded-xl bg-white/5 px-3 py-3 ring-1 ring-white/15">
+                    <div className="text-[11px] text-white/60">REVIEW</div>
+                    <div className="text-center font-semibold">Code review singkat</div>
+                  </div>
+                </div>
+              </div>
+            </Reveal>
+          </section>
 
-export default function RoadmapPage() {
-  // penting: ambil properti langsung agar tidak bikin selector object baru (menghindari loop)
-  const roadmap = useAppStore(s => s.roadmap)
-  if (!roadmap) return <EmptyState />
-  return <HasRoadmap roadmap={roadmap} />
+          <section className="relative overflow-hidden">
+            <div className="absolute -inset-1 rounded-[34px] bg-gradient-to-r from-cyan-400/15 via-fuchsia-500/10 to-transparent blur-2xl" />
+            <div className="relative rounded-[28px] border border-white/10 bg-white/5 backdrop-blur-xl px-6 py-10 md:px-12 shadow-[0_24px_60px_rgba(0,0,0,.35)] text-center">
+              <Reveal>
+                <h3 className="text-2xl md:text-3xl font-bold">Siap menyusun roadmap pertamamu?</h3>
+                <p className="mx-auto mt-2 max-w-2xl text-white/75">Profiling skill dan tujuan, lalu dapatkan langkah mingguan otomatis.</p>
+                <div className="mt-6 flex justify-center gap-3">
+                  {!hasRoadmap ? (
+                    <Link href="/profile" className="btn-primary">Buat dari Profil</Link>
+                  ) : (
+                    <>
+                      <Link href="/roadmap/my" className="btn-primary">Buka Roadmapku</Link>
+                      <ResetRoadmapButton />
+                    </>
+                  )}
+                </div>
+              </Reveal>
+            </div>
+          </section>
+        </div>
+      </main>
+      <Footer />
+    </>
+  );
 }
