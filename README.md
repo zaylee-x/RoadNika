@@ -1,45 +1,56 @@
-# RoadNika — Ukur Skill & Petakan Karier 🎯
+Fitur Utama
 
-> Platform kecil tapi niat: bantu perempuan masuk/naik level di dunia teknologi lewat **profil singkat → roadmap personal** (mingguan & mindmap) + **kelas terkurasi**.  
-> Dibangun dengan **Next.js (App Router)**, **Tailwind CSS**, dan **Zustand**.
+✨ Apa yang bisa kamu lakukan dengan RoadNika?
 
-<p align="center">
-  <img src="public/image/cover.png" alt="RoadNika cover" width="860" />
-</p>
+🧠 Ukur Skill & Tujuan
+Isi profilmu — nama, role, level, keterampilan, sertifikasi, dan proyek — untuk mendapatkan rekomendasi belajar yang personal. 
+GitHub
 
-<p align="center">
-  <a><img src="https://img.shields.io/badge/Next.js-15-black?logo=nextdotjs" /></a>
-  <a><img src="https://img.shields.io/badge/TailwindCSS-latest-teal?logo=tailwindcss" /></a>
-  <a><img src="https://img.shields.io/badge/Zustand-store-orange" /></a>
-  <a><img src="https://img.shields.io/badge/Deployed%20on-Vercel-black?logo=vercel" /></a>
-</p>
+📅 Roadmap Mingguan/Personal
+Roadmap belajar yang realistis (6–8 jam/minggu) dipetakan berdasarkan level dan tujuan kamu. 
+GitHub
 
----
+🗺️ Mindmap UI/UX Interaktif
+Peta visual keterampilan dan materi, lengkap dengan status (Belum/Proses/Selesai) dan daftar sumber daya di setiap node. 
+GitHub
 
-## ✨ Fitur Utama
+📚 Katalog Materi Belajar
+Halaman materi belajar menyediakan daftar topik terkurasi (artikel, video, kursus) dengan durasi, tingkat kesulitan, dan kategori. 
+RoadNika
 
-- **Profil sekali isi** → nama, role, level, skill, sertifikat, proyek (**disimpan lokal**).
-- **Roadmap Mingguan** → checklist realistis (6–8 jam/minggu) + catatan/refleksi.
-- **Mindmap UI/UX** → zoom/pan, status node (Belum/Proses/Selesai), klik node → **Resource Drawer**.
-- **Kelas/Katalog** → filter by **role** (FE/BE/UIUX/Data), **free/paid**, format, dan topik.
-- **Google Calendar** → _deep link_ cepat (tanpa file `.ics`) buat block waktu belajar.
-- **Fallback pintar** → kalau AI error, roadmap tetap dibuat dari katalog & rules lokal.
-- **Dark-mode first** + animasi halus.
+🌙 Dark Mode dan Animasi Halus
+UI modern dengan fokus pada kenyamanan visual pengguna. 
+GitHub
 
----
+🧠 Halaman / Alur Aplikasi
+Path	Deskripsi
+/	Halaman landing + CTA untuk mulai menggunakan
+/profile	Form pengisian profil pengguna
+/roadmap	Preview roadmap + kontrol reset
+/roadmap/my	Roadmap personal (Mindmap / Mingguan / Kelas)
+/learn	Daftar materi belajar terstruktur
+📂 Struktur Proyek
+RoadNika/
+├─ public/                # Gambar & aset statis
+├─ src/
+│   ├─ app/               # Rute aplikasi Next.js
+│   ├─ components/        # UI & reusable components
+│   ├─ store/             # Zustand state management
+│   └─ styles/            # Tailwind CSS setup
+├─ .gitignore
+├─ package.json
+├─ next.config.mjs
+├─ tailwind.config.js
+└─ README.md
 
-## 🧭 Halaman
+🛠️ Teknologi
 
-| Path | Deskripsi |
-| --- | --- |
-| `/` | Landing + CTA |
-| `/profile` | Form profil **satu halaman** (basic + skill + sertifikat + proyek) |
-| `/roadmap` | Landing Roadmap (preview + CTA) + Reset Roadmap |
-| `/roadmap/my` | **Roadmapku** — toggle **Mindmap / Mingguan / Kelas** |
+📦 Stack Utama
 
-> Ganti gambar di `/public/image/` (`cover.png`, `profile.png`, `roadmap.png`, …) biar README makin hidup.
+🔹 Next.js (React modern dengan App Router)
 
----
+🎨 Tailwind CSS (utility-first styling)
 
-## 🗂 Struktur Folder
+🧠 Zustand (state management ringan)
 
+🔧 Konfigurasi tambahan: ESLint, PostCSS, dan tooling default Next.js.
